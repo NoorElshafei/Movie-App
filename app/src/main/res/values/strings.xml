@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Movie Explorer</string>
+    <string name="movie_poster">Movie Poster</string>
+    <string name="favorite_list">Favorite List</string>
+    <string name="movie_details">Movie Details</string>
+    <string-array name="filter_options">
+        <item>Select genre</item>
+        <item>All Genres</item>
+        <item>Action</item>
+        <item>Comedy</item>
+        <item>Drama</item>
+        <!-- Add more genres as needed -->
+    </string-array>
+
+    <string-array name="sort_options">
+        <item>Select sort</item>
+        <item>Sort by Year</item>
+        <item>Sort by Title</item>
+    </string-array>
+</resources>
