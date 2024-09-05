@@ -14,12 +14,22 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 
+/**
+ * This ViewModel manages movie details retrieval for the Movie Explorer app.
+ * It interacts with the MovieRepository to fetch details for a specific movie based on its IMDb ID.
+ * It exposes LiveData for movie details and any errors encountered during data fetching.
+ */
 @HiltViewModel
 public class MovieDetailsViewModel extends ViewModel {
     private final MovieRepository movieRepository;
     private final MutableLiveData<String> errorLiveData;
     MutableLiveData<Movie> movieDetails;
 
+    /**
+     * Constructor for injecting the MovieRepository dependency.
+     *
+     * @param movieRepository The MovieRepository instance.
+     */
     @Inject
     public MovieDetailsViewModel(
             MovieRepository movieRepository
@@ -29,13 +39,22 @@ public class MovieDetailsViewModel extends ViewModel {
         movieDetails = new MutableLiveData<>();
     }
 
-
-    public LiveData<String> getError() {
+    /**
+     * Exposes LiveData containing any errors encountered during data fetching.
+     *
+     * @return LiveData for errors.
+     */
+    public MutableLiveData<String> getError() {
         return errorLiveData;
     }
 
-
-    public LiveData<Movie> getMovieDetails(String imdbID) {
+    /**
+     * Fetches movie details for the provided IMDb ID from the MovieRepository.
+     *
+     * @param imdbID The IMDb ID of the movie.
+     * @return LiveData containing the fetched movie details or null if an error occurs.
+     */
+    public MutableLiveData<Movie> getMovieDetails(String imdbID) {
         movieRepository.getMovieDetails(imdbID, new OnMovieDetailsFetchedListener() {
             @Override
             public void onFetched(Movie movie) {

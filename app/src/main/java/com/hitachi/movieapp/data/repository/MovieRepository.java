@@ -2,21 +2,18 @@ package com.hitachi.movieapp.data.repository;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import com.hitachi.movieapp.BuildConfig;
-import com.hitachi.movieapp.data.local.AppDatabase;
 import com.hitachi.movieapp.data.local.MovieDao;
 import com.hitachi.movieapp.data.model.response.Movie;
 import com.hitachi.movieapp.data.model.response.MovieResponse;
 import com.hitachi.movieapp.data.network.OmdbApi;
-import com.hitachi.movieapp.data.network.RetrofitClient;
-import com.hitachi.movieapp.utils.MyApplication;
-import com.hitachi.movieapp.utils.NetworkUtils;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
@@ -24,19 +21,51 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MovieRepository {
-    private final OmdbApi omdbApi;
-    private final MovieDao movieDao;
-    private static final String API_KEY = BuildConfig.OMDB_API_KEY;
 
+/**
+ * Repository class that handles retrieving and managing movie data from both local (database)
+ * and remote (OMDb API) sources.
+ */
+public class MovieRepository {
+    /**
+     * Interface for OMDb API interaction.
+     */
+    private final OmdbApi omdbApi;
+    /**
+     * DAO for accessing the local movie database.
+     */
+    private final MovieDao movieDao;
+    /**
+     * OMDb API key from BuildConfig.
+     */
+    private static final String API_KEY = BuildConfig.OMDB_API_KEY;
+    private final Executor executor;
+
+    /**
+     * Constructor for injecting dependencies.
+     *
+     * @param movieDao The MovieDao instance.
+     * @param omdbApi  The OmdbApi instance.
+     */
     @Inject
     public MovieRepository(
             MovieDao movieDao,
-            OmdbApi omdbApi) {
+            OmdbApi omdbApi,
+            Executor executor) {
         this.movieDao = movieDao;
         this.omdbApi = omdbApi;
+        this.executor = executor;
+
     }
 
+    /**
+     * Fetches movies from the OMDb API based on a search query and page number.
+     * Uses a callback interface (`OnMoviesFetchedListener`) to notify the caller of the results.
+     *
+     * @param query    The search query.
+     * @param page     The page number (for pagination).
+     * @param listener The callback listener for receiving fetched movies or errors.
+     */
     public void getMovies(String query, int page, OnMoviesFetchedListener listener) {
 
         omdbApi.getMovies(API_KEY, query, page).enqueue(new Callback<MovieResponse>() {
@@ -64,6 +93,13 @@ public class MovieRepository {
         });
     }
 
+    /**
+     * Fetches details of a specific movie using its IMDb ID from the OMDb API.
+     * Uses a callback interface (`OnMovieDetailsFetchedListener`) to notify the caller of the results.
+     *
+     * @param imdbID   The IMDb ID of the movie to fetch details for.
+     * @param listener The callback listener for receiving fetched movie details or errors.
+     */
     public void getMovieDetails(String imdbID, OnMovieDetailsFetchedListener listener) {
         Call<Movie> call = omdbApi.getMovieDetails(imdbID, API_KEY);
         call.enqueue(new Callback<Movie>() {
@@ -83,11 +119,16 @@ public class MovieRepository {
         });
     }
 
+    /**
+     * Updates the favorite status of a movie in the local database.
+     *
+     * @param movie The movie to update the favorite status for.
+     */
     public void updateFavoriteStatus(Movie movie) {
         if (movie.isFavorite())
-            new Thread(() -> movieDao.deleteById(movie.getImdbID())).start();
+            executor.execute(() -> movieDao.deleteById(movie.getImdbID()));
         else
-            new Thread(() -> movieDao.insert(movie)).start();
+            executor.execute(() -> movieDao.insert(movie));
     }
 
     public LiveData<List<Movie>> getFavoriteMovies() {

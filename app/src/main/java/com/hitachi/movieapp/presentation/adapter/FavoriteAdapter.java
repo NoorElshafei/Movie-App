@@ -19,8 +19,14 @@ import com.hitachi.movieapp.presentation.movies_list.OnMovieClickListener;
 
 import java.util.List;
 
+/**
+ * Adapter for displaying a list of favorite movies in a RecyclerView.
+ * Handles view binding, click events, and updates to the movie list.
+ */
 public class FavoriteAdapter extends RecyclerView.Adapter<BaseViewHolder> {
+    // List of favorite movies to display
     private final List<Movie> movieList;
+    // Callback for when a movie item is clicked
     private final OnMovieClickListener listener;
 
     public FavoriteAdapter(List<Movie> movieList,

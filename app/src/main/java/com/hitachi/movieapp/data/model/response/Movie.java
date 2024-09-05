@@ -42,6 +42,7 @@ public class Movie {
     private boolean isFavorite;
 
 
+
     public String getTitle() {
         return title;
     }

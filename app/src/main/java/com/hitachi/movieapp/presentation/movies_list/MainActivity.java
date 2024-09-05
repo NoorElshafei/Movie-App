@@ -34,12 +34,33 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class MainActivity extends AppCompatActivity implements
         OnMovieClickListener, OnFavoriteClickListener {
+    /**
+     * The ViewModel for managing movie-related data and operations.
+     */
     private MovieViewModel movieViewModel;
+    /**
+     * The adapter for displaying movies in the RecyclerView.
+     */
     private MovieAdapter adapter;
+    /**
+     * Indicates if data is currently being loaded.
+     */
     private boolean isLoading = false;
+    /**
+     * The current page number for pagination.
+     */
     private int currentPage = 1;
+    /**
+     * The total number of available pages.
+     */
     private Integer totalPages = 0;
+    /**
+     * Indicates if movies exist.
+     */
     private boolean isMoviesExist = false;
+    /**
+     * The current search query.
+     */
     private String movieName = "batman";
 
 
@@ -50,25 +71,26 @@ public class MainActivity extends AppCompatActivity implements
         View view = binding.getRoot();
         setContentView(view);
 
-
+        // Initialize ViewModel
         movieViewModel = new ViewModelProvider(this).get(MovieViewModel.class);
 
+        // Set up the adapter and RecyclerView
         adapter = new MovieAdapter(new ArrayList<>(), this, this);
         binding.recyclerViewMovies.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerViewMovies.setAdapter(adapter);
 
-        // Setup SwipeRefreshLayout
+        // Configure SwipeRefreshLayout for refreshing data
         binding.swipeRefreshLayout.setOnRefreshListener(() -> {
             // Reload the data here
             binding.spinnerSort.setSelection(0);
             if (movieName.isEmpty())
                 movieName = "batman";
-            movieViewModel.removeMovies();
             adapter.removeMovies();
             currentPage = 1;
             loadNextPage();
         });
 
+        // Set up search functionality
         binding.searchCardView.setOnClickListener(view1 -> {
             binding.searchView.setIconified(false); // Expand the SearchView
             binding.searchView.requestFocus(); // Request focus
@@ -76,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements
             imm.showSoftInput(binding.searchView, InputMethodManager.SHOW_IMPLICIT); // Show the keyboard
         });
 
-
+        // Set up sorting options
         binding.spinnerSort.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -89,6 +111,8 @@ public class MainActivity extends AppCompatActivity implements
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
+
+        // Set up favorite button click listener
         binding.fav.setOnClickListener(view1 -> {
             Intent intent = new Intent(MainActivity.this, FavoriteMoviesActivity.class);
             startActivity(intent);
@@ -110,11 +134,13 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
+        // Observe LiveData from ViewModel responsible for sorting movies
         movieViewModel.getSortedMovies().observe(this, movies -> {
             adapter.removeMovies();
             adapter.updateMovies(movies);
         });
 
+        // Observe LiveData from ViewModel responsible for fetching movies
         movieViewModel.getMoviesLiveData().observe(this, movieResponse -> {
             List<Movie> movies = movieResponse.getMovies();
             totalPages = Integer.parseInt(movieResponse.getTotalResults()) / 10;
@@ -174,7 +200,11 @@ public class MainActivity extends AppCompatActivity implements
         loadNextPage();
 
     }
-
+    /**
+     * Loads movies based on the given search text.
+     *
+     * @param searchText The search query.
+     */
     private void loadMovies(String searchText) {
         if (NetworkUtils.isInternetAvailable(this)) {
             movieName = searchText;
@@ -189,7 +219,9 @@ public class MainActivity extends AppCompatActivity implements
         }
 
     }
-
+    /**
+     * Loads the next page of movies.
+     */
     private void loadNextPage() {
         isLoading = true;
         adapter.addLoadingFooter();

@@ -16,20 +16,22 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 
 @HiltViewModel
 public class FavoriteMoviesViewModel extends ViewModel {
-    private final LiveData<List<Movie>> favoriteMovies;
-
+    private final MutableLiveData<List<Movie>> favoriteMovies;
+    private final MovieRepository movieRepository;
 
     @Inject
     public FavoriteMoviesViewModel(
             MovieRepository movieRepository
     ) {
-        this.favoriteMovies = movieRepository.getFavoriteMovies();
+        this.movieRepository = movieRepository;
+        this.favoriteMovies = new MutableLiveData<>();
 
     }
+
     public LiveData<List<Movie>> getFavoriteMovies() {
+        movieRepository.getFavoriteMovies().observeForever(favoriteMovies::setValue);
         return favoriteMovies;
     }
-
 
 
 }

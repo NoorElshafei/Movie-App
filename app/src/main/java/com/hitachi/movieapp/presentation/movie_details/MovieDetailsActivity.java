@@ -14,6 +14,10 @@ import com.hitachi.movieapp.utils.NetworkUtils;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
+/**
+ * This Activity displays detailed information about a selected movie.
+ * It retrieves movie details from the MovieDetailsViewModel and displays them on the screen.
+ */
 @AndroidEntryPoint
 public class MovieDetailsActivity extends AppCompatActivity {
     private ActivityMovieDetailsBinding binding;
@@ -22,12 +26,16 @@ public class MovieDetailsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Use DataBinding for easier view access
         binding = ActivityMovieDetailsBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
         String imdbID = getIntent().getStringExtra("imdbID");
 
+        // Initialize ViewModel
         movieDetailsViewModel = new ViewModelProvider(this).get(MovieDetailsViewModel.class);
+
+        // Check for internet connectivity before fetching data
         if (NetworkUtils.isInternetAvailable(this)) {
             getDetailsOfMovie(imdbID);
         }
@@ -36,13 +44,18 @@ public class MovieDetailsActivity extends AppCompatActivity {
             Toast.makeText(MovieDetailsActivity.this, "No internet connection", Toast.LENGTH_SHORT).show();
         }
 
-
+        // Observe ViewModel for any errors encountered
         movieDetailsViewModel.getError().observe(this, errorMsg -> {
             Toast.makeText(MovieDetailsActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
         });
 
     }
 
+    /**
+     * Fetches movie details for the provided IMDb ID from the ViewModel.
+     *
+     * @param imdbID The IMDb ID of the movie.
+     */
     private void getDetailsOfMovie(String imdbID) {
         movieDetailsViewModel.getMovieDetails(imdbID).observe(this, movie -> {
             if (movie != null) {

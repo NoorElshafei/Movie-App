@@ -6,9 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -19,23 +17,36 @@ import com.hitachi.movieapp.presentation.movies_list.OnMovieClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * Adapter for displaying a list of movies in a RecyclerView.
+ * Handles view binding, click events, and updates to the movie list.
+ */
 public class MovieAdapter extends RecyclerView.Adapter<BaseViewHolder> {
+    // List of movies to display
     private final List<Movie> movieList;
+    // Callback for when a movie item is clicked
     private final OnMovieClickListener listener;
-    private OnFavoriteClickListener onFavoriteClickListener;
-    private List<Movie> favoriteMovies;
+    // Callback for when the favorite button is clicked
+    private final OnFavoriteClickListener onFavoriteClickListener;
+    // View types for loading indicator and movie items
     private static final int VIEW_TYPE_LOADING = 0;
     private static final int VIEW_TYPE_MOVIE = 1;
+    // Flag to indicate if a loading footer is added
     private boolean isLoadingAdded = false;
 
 
+    /**
+     * Constructor for the MovieAdapter.
+     *
+     * @param movieList The list of movies to display.
+     * @param listener The callback for movie item clicks.
+     * @param onFavoriteClickListener The callback for favorite button clicks.
+     */
     public MovieAdapter(List<Movie> movieList,
                         OnMovieClickListener listener,
                         OnFavoriteClickListener onFavoriteClickListener
     ) {
         this.onFavoriteClickListener = onFavoriteClickListener;
-        this.favoriteMovies = new ArrayList<>();
         this.movieList = movieList;
         this.listener = listener;
     }
@@ -57,13 +68,18 @@ public class MovieAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         holder.onBind(position);
     }
 
+    /**
+     * Adds a loading footer to the adapter for indicating data is being fetched.
+     */
     public void addLoadingFooter() {
         isLoadingAdded = true;
         movieList.add(new Movie()); // Adding an empty item as the loading placeholder
         notifyItemInserted(movieList.size() - 1);
     }
 
-
+    /**
+     * Removes the loading footer from the adapter.
+     */
     public void removeLoadingFooter() {
         isLoadingAdded = false;
         int position = movieList.size() - 1;
@@ -74,6 +90,12 @@ public class MovieAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         }
     }
 
+    /**
+     * Gets the movie item at the specified position.
+     *
+     * @param position The position of the item.
+     * @return The movie item at the given position, or null if it doesn't exist.
+     */
     private Movie getItem(int position) {
         return movieList.get(position);
     }
@@ -88,33 +110,41 @@ public class MovieAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         return (position == movieList.size() - 1 && isLoadingAdded) ? VIEW_TYPE_LOADING : VIEW_TYPE_MOVIE;
     }
 
+    /**
+     * Updates the movie list with the provided list of movies.
+     *
+     * @param movies The new list of movies.
+     */
     @SuppressLint("NotifyDataSetChanged")
     public void updateMovies(List<Movie> movies) {
         movieList.addAll(movies);
         notifyDataSetChanged();
     }
 
+    /**
+     * Adds a list of new movies to the end of the existing movie list.
+     *
+     * @param newMovies The list of new movies to add.
+     */
     public void addMovies(List<Movie> newMovies) {
         int startPosition = movieList.size();
         this.movieList.addAll(newMovies);
         notifyItemRangeInserted(startPosition, newMovies.size());
     }
 
+    /**
+     * Clears the movie list.
+     */
     public void removeMovies() {
         movieList.clear();
         notifyDataSetChanged();
     }
 
-    public void setFavouritMovies(List<Movie> movies) {
-        favoriteMovies = movies;
-
-    }
-
-    public List<Movie> getAllMovies() {
-        return movieList;
-
-    }
-
+    /**
+     * Edits the movie at the specified position to toggle its favorite status.
+     *
+     * @param position The position of the movie to edit.
+     */
     public void editMovie(int position) {
         if (!movieList.isEmpty()) {
             movieList.get(position).setFavorite(true);
@@ -122,7 +152,9 @@ public class MovieAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         }
     }
 
-
+    /**
+     * View holder for movie items.
+     */
     public class MovieViewHolder extends BaseViewHolder {
         TextView title, year;
         ImageView poster, fav;
@@ -142,7 +174,9 @@ public class MovieAdapter extends RecyclerView.Adapter<BaseViewHolder> {
                 Movie movie = movieList.get(position);
                 title.setText(movie.getTitle());
                 year.setText(movie.getYear());
-                Glide.with(poster.getContext()).load(movie.getPoster()).into(poster);
+                Glide.with(poster.getContext()).load(movie.getPoster()).placeholder(R.drawable.place_holder).into(poster);
+
+                // Check if the movie is a favorite and update the favorite button accordingly
                 if (movie.isFavorite())
                     Glide.with(fav.getContext()).load(R.drawable.baseline_favorite_24).into(fav);
                 else
@@ -160,6 +194,9 @@ public class MovieAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         }
     }
 
+    /**
+     * View holder for the loading indicator.
+     */
     public static class ProgressHolder extends BaseViewHolder {
         public ProgressHolder(View itemView) {
             super(itemView);

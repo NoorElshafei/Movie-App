@@ -15,10 +15,18 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import javax.inject.Singleton;
 
+/**
+ * Dagger Hilt module for providing network-related dependencies.
+ */
 @Module
 @InstallIn(SingletonComponent.class)
 public class NetworkModule {
 
+    /**
+     * Provides an OkHttpClient instance with a logging interceptor.
+     *
+     * @return The OkHttpClient instance.
+     */
     @Provides
     @Singleton
     public OkHttpClient provideOkHttpClient() {
@@ -26,13 +34,25 @@ public class NetworkModule {
                 .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
                 .build();
     }
-
+    /**
+     * Provides  
+     a Gson instance for JSON parsing.
+     *
+     * @return The Gson instance.
+     */
     @Provides
     @Singleton
     public Gson provideGson() {
         return new GsonBuilder().create();
     }
 
+    /**
+     * Provides a Retrofit instance configured with the OkHttpClient and Gson.
+     *
+     * @param okHttpClient The OkHttpClient instance.
+     * @param gson The Gson instance.
+     * @return The Retrofit instance.
+     */
     @Provides
     @Singleton
     public Retrofit provideRetrofit(
@@ -45,7 +65,12 @@ public class NetworkModule {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
     }
-
+    /**
+     * Provides an OmdbApi interface for making API calls.
+     *
+     * @param retrofit The Retrofit instance.
+     * @return The OmdbApi interface.
+     */
     @Provides
     @Singleton
     public OmdbApi provideApiService(
