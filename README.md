@@ -47,8 +47,6 @@ The app is designed using the **MVVM (Model-View-ViewModel)** architectural patt
 4. **Testing**
 Unit tests are included for repository and ViewModel classes. To run tests, go to the Run menu and select Run 'All Tests'
 
-### Architecture Details
-
 ## Architecture Details
 
 ### Activities
