@@ -78,7 +78,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<BaseViewHolder> {
                 Movie movie = movieList.get(position);
                 title.setText(movie.getTitle());
                 year.setText(movie.getYear());
-                Glide.with(poster.getContext()).load(movie.getPoster()).into(poster);
+                Glide.with(poster.getContext()).load(movie.getPoster()).placeholder(R.drawable.place_holder).into(poster);
                 itemView.setOnClickListener(v -> listener.onMovieClick(movie));
 
             }

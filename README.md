@@ -45,7 +45,7 @@ The app is designed using the **MVVM (Model-View-ViewModel)** architectural patt
 - Click on the Run button (green play icon) in Android Studio.
 
 4. **Testing**
-Unit tests are included for repository and ViewModel classes. To run tests, go to the Run menu and select Run 'All Tests'
+Unit tests are included for repository and ViewModel classes.
 
 ## Architecture Details
 

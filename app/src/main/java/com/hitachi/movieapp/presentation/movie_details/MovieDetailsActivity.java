@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
+import com.hitachi.movieapp.R;
 import com.hitachi.movieapp.databinding.ActivityMovieDetailsBinding;
 import com.hitachi.movieapp.presentation.movies_list.MainActivity;
 import com.hitachi.movieapp.utils.NetworkUtils;
@@ -65,7 +66,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
                 binding.textViewGenreDetails.setText(movie.getGenre());
                 binding.textViewDirectorDetails.setText(movie.getDirector());
                 binding.textViewPlotDetails.setText(movie.getPlot());
-                Glide.with(this).load(movie.getPoster()).into(binding.imageViewPosterDetails);
+                Glide.with(this).load(movie.getPoster()).placeholder(R.drawable.place_holder).into(binding.imageViewPosterDetails);
             } else {
                 binding.progressBar.setVisibility(View.GONE);
                 Toast.makeText(MovieDetailsActivity.this, "Failed to load movie details", Toast.LENGTH_SHORT).show();
