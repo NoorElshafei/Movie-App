@@ -10,7 +10,7 @@ The Movie Explorer App is an Android application developed in Java that allows u
 - **Search Functionality**: Allows users to search for movies by title and view search results.
 - **Movie Details Screen**: Displays detailed information about a selected movie, including plot, genre, director, and cast.
 - **Favorites**: Users can mark movies as favorites and view their list of favorite movies.
-- **Filtering and Sorting** (Optional): Implement sorting by year or title and filtering by genre.
+- **Sorting** (Optional): Implement sorting by year or title.
 - **Responsive UI**: Designed to work well on both phones and tablets using modern Android UI components.
 
 ## Architecture
@@ -32,7 +32,7 @@ The app is designed using the **MVVM (Model-View-ViewModel)** architectural patt
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/yourusername/movie-explorer-app.git
+   git clone https://github.com/NoorElshafei/Movie-App.git
 
 2. **Open in Android Studio**
 - Open Android Studio.
